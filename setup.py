@@ -6,18 +6,19 @@ This setup.py is provided for backward compatibility.
 """
 
 from setuptools import setup, find_packages
-import os
 
 # Read the README file
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-# Read requirements from requirements.txt
 setup(
     name="digital-twin",
     version="0.1.0",
     author="Digital Twin Team",
-    description="Fleet Decarbonization Analysis - Digital Twin for heavy transport fleet optimization",
+    description=(
+        "Fleet Decarbonization Analysis - Digital Twin for heavy "
+        "transport fleet optimization"
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/digital-twin",
@@ -59,9 +60,14 @@ setup(
             "mypy>=0.950",
         ],
     },
-    keywords="fleet decarbonization monte-carlo risk-analysis digital-twin optimization",
+    keywords=(
+        "fleet decarbonization monte-carlo risk-analysis digital-twin "
+        "optimization"
+    ),
     project_urls={
-        "Documentation": "https://github.com/yourusername/digital-twin/blob/main/README.md",
+        "Documentation": (
+            "https://github.com/yourusername/digital-twin/blob/main/README.md"
+        ),
         "Source": "https://github.com/yourusername/digital-twin",
         "Issues": "https://github.com/yourusername/digital-twin/issues",
     },
