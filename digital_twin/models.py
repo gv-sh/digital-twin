@@ -124,7 +124,7 @@ def calculate_npv(
     Parameters
     ----------
     initial_investment : float
-        Initial capital investment (positive value)
+        Initial capital investment (positive value; treated as cash outflow)
     annual_cashflows : list of float
         Annual cash flows (positive for income, negative for costs)
     discount_rate : float, optional
@@ -160,7 +160,7 @@ def calculate_total_cost_of_ownership(
     initial_cost : float
         Initial purchase cost
     annual_operating_cost : float
-        Annual operating cost
+        Annual operating cost (positive value; represents cost magnitude)
     years : int, optional
         Number of years (default: 5)
     discount_rate : float, optional

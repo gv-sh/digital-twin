@@ -172,21 +172,19 @@ def calculate_break_even_years(
     return break_even_years
 
 
-def format_currency(amount: float, currency: str = 'AUD') -> str:
+def format_currency(amount: float) -> str:
     """
-    Format a number as currency string.
+    Format a number as AUD currency string.
 
     Parameters
     ----------
     amount : float
         Amount to format
-    currency : str, optional
-        Currency code (default: 'AUD')
 
     Returns
     -------
     str
-        Formatted currency string
+        Formatted AUD currency string
 
     Examples
     --------

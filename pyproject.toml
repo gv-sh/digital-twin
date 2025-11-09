@@ -50,7 +50,8 @@ dev = [
     "mypy>=0.950",
 ]
 all = [
-    "digital-twin[notebook,dev]",
+    "notebook",
+    "dev",
 ]
 
 [project.urls]
