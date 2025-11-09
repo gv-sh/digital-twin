@@ -226,5 +226,7 @@ def calculate_co2_reduction_percentage(
     if baseline_emissions == 0:
         return 0.0
 
-    reduction = ((baseline_emissions - new_emissions) / baseline_emissions) * 100
+    reduction = (
+        (baseline_emissions - new_emissions) / baseline_emissions
+    ) * 100
     return reduction

@@ -57,7 +57,9 @@ def calculate_energy_consumption(
 
     Examples
     --------
-    >>> calculate_energy_consumption(mass=18000, grade=0, distance=100000, velocity=22.2)
+    >>> calculate_energy_consumption(
+    ...     mass=18000, grade=0, distance=100000, velocity=22.2
+    ... )
     342511200.0
     """
     # Gravitational potential energy (climbing work against gravity)
@@ -69,7 +71,10 @@ def calculate_energy_consumption(
     # Aerodynamic drag energy (air resistance)
     # Drag force: F_d = 0.5 * Cd * ρ * A * v²
     # Energy over distance: E = F_d × distance (assumes constant velocity)
-    E_aero = 0.5 * drag_coefficient * air_density * frontal_area * (velocity ** 2) * distance
+    E_aero = (
+        0.5 * drag_coefficient * air_density * frontal_area * 
+        (velocity ** 2) * distance
+    )
 
     # Total energy at wheel
     E_wheel = E_gravity + E_rolling + E_aero
@@ -187,7 +192,8 @@ def monte_carlo_simulation(
         Base parameter values
     uncertainty_params : dict
         Dictionary specifying uncertainty distributions for each parameter
-        Format: {param_name: {'type': 'normal'|'uniform', 'std': value, 'min': value, 'max': value}}
+        Format: {param_name: {'type': 'normal'|'uniform', 'std': value,
+                               'min': value, 'max': value}}
     n_simulations : int, optional
         Number of simulations to run (default: 10000)
     random_seed : int, optional
@@ -205,7 +211,9 @@ def monte_carlo_simulation(
     ...     'fuel_price': {'type': 'normal', 'std': 0.3},
     ...     'utilization': {'type': 'uniform', 'min': 0.7, 'max': 0.95}
     ... }
-    >>> results = monte_carlo_simulation(params, uncertainty, n_simulations=1000)
+    >>> results = monte_carlo_simulation(
+    ...     params, uncertainty, n_simulations=1000
+    ... )
     """
     if random_seed is not None:
         np.random.seed(random_seed)

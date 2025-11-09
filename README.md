@@ -5,6 +5,7 @@ This project demonstrates mathematical models and risk analysis for heavy transp
 ## Project Overview
 
 This research demonstration provides:
+
 - **Technology Comparison**: Performance, economic ROI, and environmental impact analysis
 - **Risk Assessment**: Monte Carlo simulations with uncertainty quantification
 - **Portfolio Optimization**: Optimal fleet composition strategies
@@ -27,7 +28,7 @@ This research demonstration provides:
 
 ## Project Structure
 
-```
+```text
 digital-twin/
 ├── digital_twin/                          # Main Python package
 │   ├── __init__.py                        # Package initialization
@@ -45,6 +46,7 @@ digital-twin/
 ## Setup Instructions
 
 ### Prerequisites
+
 - Python 3.8+
 - pip (Python package installer)
 - Jupyter Notebook or JupyterLab (for running notebooks)
@@ -54,12 +56,14 @@ digital-twin/
 #### Option 1: Install as a Python Package (Recommended)
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd digital-twin
    ```
 
 2. **Install the package with all dependencies**:
+
    ```bash
    # Standard installation
    pip install -e .
@@ -75,6 +79,7 @@ digital-twin/
    ```
 
 3. **Use the package in your code**:
+
    ```python
    from digital_twin import calculate_npv, create_base_technologies
    from digital_twin.models import calculate_energy_consumption
@@ -85,6 +90,7 @@ digital-twin/
    ```
 
 4. **Launch Jupyter to run the notebooks**:
+
    ```bash
    jupyter notebook
    ```
@@ -98,17 +104,20 @@ digital-twin/
 If you only want to run the notebooks without installing the package:
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd digital-twin
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. **Launch Jupyter**:
+
    ```bash
    jupyter notebook
    ```
@@ -122,6 +131,7 @@ If you only want to run the notebooks without installing the package:
 ### Notebook 1: Technology Comparison & ROI Analysis
 
 **Computed Visualizations:**
+
 - Energy Consumption Comparison (physics-based calculations)
 - NPV Timeline (5-year financial projections)
 - Break-even Analysis (payback period calculations)
@@ -131,6 +141,7 @@ If you only want to run the notebooks without installing the package:
 - Battery Degradation Impact (exponential decay modeling)
 
 **Key Findings:**
+
 - BEV achieves break-even in ~3.2 years with 72% emission reduction
 - FCET breaks even in ~4.5 years with 82% emission reduction
 - All clean technologies show positive ROI within 5 years
@@ -139,6 +150,7 @@ If you only want to run the notebooks without installing the package:
 ### Notebook 2: Monte Carlo Risk Assessment
 
 **Risk Analysis Components:**
+
 - NPV Distribution Analysis (10,000 simulations per technology)
 - Sensitivity Analysis (parameter correlation identification)
 - Risk-Return Optimization (efficient frontier calculation)
@@ -146,6 +158,7 @@ If you only want to run the notebooks without installing the package:
 - Scenario Stress Testing (5 market scenarios)
 
 **Key Findings:**
+
 - BEV shows 75% probability of positive NPV by year 4
 - Optimal portfolio: 60% BEV, 25% FCET, 15% Hybrid
 - Portfolio approach reduces risk while maintaining returns
@@ -154,6 +167,7 @@ If you only want to run the notebooks without installing the package:
 ## Mathematical Models
 
 ### Energy Consumption
+
 ```python
 E_wheel = mass * 9.81 * sin(grade) * distance + 
           0.006 * mass * 9.81 * distance + 
@@ -161,16 +175,19 @@ E_wheel = mass * 9.81 * sin(grade) * distance +
 ```
 
 ### Battery Degradation
+
 ```python
 range_degraded = initial_range * exp(-0.106 * years)
 ```
 
 ### Net Present Value
+
 ```python
 NPV = -initial_investment + sum(cashflow_t / (1 + 0.08)**t for t in range(1, 6))
 ```
 
 ### Monte Carlo Simulation
+
 - **Parameter Uncertainty**: Energy prices (±20%), utilization (70-95%), degradation (±25%)
 - **Distributions**: Normal, Beta, and Uniform distributions for different parameters
 - **Correlation Analysis**: Identification of key sensitivity factors
@@ -179,17 +196,20 @@ NPV = -initial_investment + sum(cashflow_t / (1 + 0.08)**t for t in range(1, 6))
 ## Results Summary
 
 ### Economic Viability
+
 - **BEV**: Break-even 3.2 years, 75% success probability
 - **FCET**: Break-even 4.5 years, 65% success probability  
 - **Hybrid**: Break-even 5.2 years, 45% success probability
 - **Portfolio**: 85% success probability with diversification
 
 ### Environmental Impact
+
 - **Significant CO₂ reductions**: 60-82% vs diesel baseline
 - **Annual savings**: 15-25 tonnes CO₂ per vehicle
 - **Regulatory compliance**: Strong case for early adoption
 
 ### Risk Assessment
+
 - **Optimal allocation**: 60% BEV, 25% FCET, 15% Hybrid
 - **Portfolio VaR**: $45K maximum expected loss (95% confidence)
 - **Scenario resilience**: Positive NPV in 4/5 stress scenarios
@@ -198,6 +218,7 @@ NPV = -initial_investment + sum(cashflow_t / (1 + 0.08)**t for t in range(1, 6))
 ## Usage Examples
 
 ### Running Analysis with Notebooks
+
 ```bash
 # Load and run technology comparison
 jupyter notebook notebooks/01_technology_comparison.ipynb
@@ -209,6 +230,7 @@ jupyter notebook notebooks/02_monte_carlo_risk.ipynb
 ### Using the Python Package
 
 #### Basic Usage
+
 ```python
 from digital_twin import (
     calculate_npv,
@@ -238,6 +260,7 @@ print(f"Energy consumption: {energy:,.0f} J")
 ```
 
 #### Advanced Usage - Monte Carlo Simulation
+
 ```python
 from digital_twin.models import monte_carlo_simulation
 from digital_twin.utils import create_uncertainty_params
@@ -264,6 +287,7 @@ print(f"Ran {len(results)} simulations")
 ```
 
 ### Customizing Parameters in Notebooks
+
 ```python
 # Modify base technology specifications
 base_technologies = create_base_technologies()
@@ -321,6 +345,7 @@ This project is for research and demonstration purposes. The synthetic data and 
 ## Contact & Support
 
 For questions about the methodology, models, or implementation:
+
 - Review the detailed comments and markdown cells in both notebooks
 - Check the mathematical model implementations in the code cells
 - Refer to the comprehensive results summaries at the end of each notebook
