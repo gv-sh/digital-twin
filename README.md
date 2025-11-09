@@ -29,9 +29,15 @@ This research demonstration provides:
 
 ```
 digital-twin/
+├── digital_twin/                          # Main Python package
+│   ├── __init__.py                        # Package initialization
+│   ├── models.py                          # Mathematical models (NPV, energy, degradation)
+│   └── utils.py                           # Utility functions and configurations
 ├── notebooks/
 │   ├── 01_technology_comparison.ipynb    # Main analysis & visualizations
 │   └── 02_monte_carlo_risk.ipynb         # Risk assessment & portfolio optimization
+├── pyproject.toml                         # Modern Python package configuration
+├── setup.py                               # Setup script for package installation
 ├── requirements.txt                       # Python dependencies
 └── README.md                             # This file
 ```
@@ -39,10 +45,57 @@ digital-twin/
 ## Setup Instructions
 
 ### Prerequisites
-- Python 3.8+ 
-- Jupyter Notebook or JupyterLab
+- Python 3.8+
+- pip (Python package installer)
+- Jupyter Notebook or JupyterLab (for running notebooks)
 
 ### Installation
+
+#### Option 1: Install as a Python Package (Recommended)
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd digital-twin
+   ```
+
+2. **Install the package with all dependencies**:
+   ```bash
+   # Standard installation
+   pip install -e .
+
+   # Or with notebook dependencies
+   pip install -e ".[notebook]"
+
+   # Or with development dependencies
+   pip install -e ".[dev]"
+
+   # Or install everything
+   pip install -e ".[all]"
+   ```
+
+3. **Use the package in your code**:
+   ```python
+   from digital_twin import calculate_npv, create_base_technologies
+   from digital_twin.models import calculate_energy_consumption
+
+   # Use the functions
+   technologies = create_base_technologies()
+   npv = calculate_npv(150000, [30000, 30000, 30000, 30000, 30000])
+   ```
+
+4. **Launch Jupyter to run the notebooks**:
+   ```bash
+   jupyter notebook
+   ```
+
+5. **Run the notebooks**:
+   - Start with `01_technology_comparison.ipynb` for comprehensive technology analysis
+   - Continue with `02_monte_carlo_risk.ipynb` for risk assessment and portfolio optimization
+
+#### Option 2: Dependencies Only
+
+If you only want to run the notebooks without installing the package:
 
 1. **Clone the repository**:
    ```bash
@@ -144,8 +197,8 @@ NPV = -initial_investment + sum(cashflow_t / (1 + 0.08)**t for t in range(1, 6))
 
 ## Usage Examples
 
-### Running Analysis
-```python
+### Running Analysis with Notebooks
+```bash
 # Load and run technology comparison
 jupyter notebook notebooks/01_technology_comparison.ipynb
 
@@ -153,15 +206,75 @@ jupyter notebook notebooks/01_technology_comparison.ipynb
 jupyter notebook notebooks/02_monte_carlo_risk.ipynb
 ```
 
-### Customizing Parameters
+### Using the Python Package
+
+#### Basic Usage
+```python
+from digital_twin import (
+    calculate_npv,
+    calculate_energy_consumption,
+    create_base_technologies,
+    create_base_scenario,
+)
+
+# Get base technology specifications
+technologies = create_base_technologies()
+print(f"BEV initial cost: ${technologies['BEV']['initial_cost']:,}")
+
+# Calculate NPV for an investment
+initial_investment = 150000
+annual_cashflows = [30000, 30000, 30000, 30000, 30000]
+npv = calculate_npv(initial_investment, annual_cashflows)
+print(f"NPV: ${npv:,.2f}")
+
+# Calculate energy consumption
+energy = calculate_energy_consumption(
+    mass=18000,      # kg
+    grade=0,         # radians
+    distance=100000, # meters
+    velocity=22.2    # m/s (80 km/h)
+)
+print(f"Energy consumption: {energy:,.0f} J")
+```
+
+#### Advanced Usage - Monte Carlo Simulation
+```python
+from digital_twin.models import monte_carlo_simulation
+from digital_twin.utils import create_uncertainty_params
+
+# Define base parameters
+base_params = {
+    'fuel_price': 1.50,
+    'electricity_price': 0.25,
+    'utilization': 0.85,
+}
+
+# Get uncertainty specifications
+uncertainty = create_uncertainty_params()
+
+# Run simulation
+results = monte_carlo_simulation(
+    base_params=base_params,
+    uncertainty_params=uncertainty,
+    n_simulations=10000,
+    random_seed=42
+)
+
+print(f"Ran {len(results)} simulations")
+```
+
+### Customizing Parameters in Notebooks
 ```python
 # Modify base technology specifications
+base_technologies = create_base_technologies()
 base_technologies['BEV']['initial_cost'] = 350000  # Update BEV cost
 
 # Adjust uncertainty parameters
-uncertainty_params['fuel_price_variation']['std'] = 0.20  # Increase fuel price uncertainty
+uncertainty_params = create_uncertainty_params()
+uncertainty_params['fuel_price_variation']['std'] = 0.20  # Increase uncertainty
 
 # Change scenario parameters
+base_scenario = create_base_scenario()
 base_scenario['annual_km'] = 120000  # Higher utilization
 ```
 

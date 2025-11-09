@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digital-twin"
+version = "0.1.0"
+description = "Fleet Decarbonization Analysis - Digital Twin for heavy transport fleet optimization"
+readme = "README.md"
+authors = [
+    {name = "Digital Twin Team"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+keywords = ["fleet", "decarbonization", "monte-carlo", "risk-analysis", "digital-twin", "optimization"]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "pandas>=1.3.0",
+    "matplotlib>=3.4.0",
+    "seaborn>=0.11.0",
+    "plotly>=5.0.0",
+    "scipy>=1.7.0",
+]
+
+[project.optional-dependencies]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipywidgets>=7.6.0",
+    "kaleido>=0.2.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=3.0.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950",
+]
+all = [
+    "digital-twin[notebook,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/digital-twin"
+Documentation = "https://github.com/yourusername/digital-twin/blob/main/README.md"
+Repository = "https://github.com/yourusername/digital-twin"
+Issues = "https://github.com/yourusername/digital-twin/issues"
+
+[tool.setuptools]
+packages = ["digital_twin"]
+
+[tool.setuptools.package-data]
+digital_twin = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=digital_twin"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
