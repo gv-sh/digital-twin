@@ -72,9 +72,7 @@ digital-twin/
 │   ├── analysis/                          # Performance analysis
 │   ├── algorithms/                        # Core algorithms
 │   ├── visualization/                     # Charts and reports
-│   ├── api/                               # REST API
-│   ├── models.py                          # Legacy (kept for compatibility)
-│   └── utils.py                           # Legacy (kept for compatibility)
+│   └── api/                               # REST API
 ├── notebooks/
 │   ├── 01_technology_comparison.ipynb    # Main analysis & visualizations
 │   └── 02_monte_carlo_risk.ipynb         # Risk assessment & portfolio optimization
