@@ -30,6 +30,29 @@ class OperationalContext(Enum):
     REGIONAL = "regional"
     LONG_HAUL = "long_haul"
     MINING = "mining"
+    MIXED = "mixed"
+
+class TechnologyType(Enum):
+    DIESEL = "diesel"
+    BEV = "bev"
+    FCEV = "fcev"
+    HYBRID = "hybrid"
+    PHEV = "phev"
+    BIODIESEL = "biodiesel"
+    CNG = "cng"
+    LNG = "lng"
+
+class TerrainType(Enum):
+    FLAT = "flat"
+    ROLLING = "rolling"
+    HILLY = "hilly"
+    MOUNTAINOUS = "mountainous"
+
+class ChargingType(Enum):
+    DEPOT = "depot"
+    OPPORTUNITY = "opportunity"
+    EN_ROUTE = "en_route"
+    PUBLIC = "public"
 
 class InfrastructureType(Enum):
     FAST_CHARGER = "fast_charger"
@@ -356,6 +379,9 @@ __all__ = [
     "VehicleType",
     "FuelType",
     "OperationalContext",
+    "TechnologyType",
+    "TerrainType",
+    "ChargingType",
     "InfrastructureType",
     "MaintenanceType",
     "IncentiveType",
