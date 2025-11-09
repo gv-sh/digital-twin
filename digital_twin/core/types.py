@@ -12,6 +12,7 @@ from datetime import datetime, date
 
 # Enumerations
 class VehicleType(Enum):
+    HEAVY_TRUCK = "heavy_truck"  # Generic heavy truck category
     HEAVY_RIGID = "heavy_rigid"
     ARTICULATED = "articulated"
     B_DOUBLE = "b_double"
@@ -19,7 +20,9 @@ class VehicleType(Enum):
 
 class FuelType(Enum):
     DIESEL = "diesel"
+    ELECTRIC = "electric"  # Alias for backward compatibility
     ELECTRIC_BEV = "electric_bev"
+    HYDROGEN = "hydrogen"  # Alias for backward compatibility
     HYDROGEN_FCEV = "hydrogen_fcev"
     BIODIESEL = "biodiesel"
     CNG = "cng"

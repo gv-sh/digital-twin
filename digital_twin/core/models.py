@@ -3,6 +3,26 @@ Core data models for fleet decarbonization analysis.
 
 This module defines the fundamental data structures used throughout
 the analysis, including vehicle specifications, scenarios, and results.
+
+MODEL VERSIONING NOTES:
+-----------------------
+This module contains both V1 (simple) and V2 (comprehensive) model versions:
+
+- V1 Models: VehicleSpecs, OperationalProfile, FinancialParams, etc.
+  - Recommended for most use cases
+  - Simpler structure with essential parameters
+  - Fully integrated with the codebase
+  - Used in all examples and notebooks
+
+- V2 Models: VehicleSpecsV2, OperationalProfileV2, FinancialParamsV2, etc.
+  - Advanced/experimental models with extended attributes
+  - Designed for detailed fleet management scenarios
+  - More comprehensive but may require additional implementation
+  - Currently in experimental stage
+
+RECOMMENDATION: Use V1 models unless you need the additional complexity
+and attributes provided by V2 models. V2 models are provided for future
+extensibility but are not required for standard decarbonization analysis.
 """
 
 from dataclasses import dataclass, field
