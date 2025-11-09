@@ -9,6 +9,11 @@ calculations.
 import numpy as np
 from typing import Dict, List, Optional
 
+# Physical constants
+GRAVITY_ACCELERATION = 9.81  # m/s²
+ROLLING_RESISTANCE_COEFF = 0.006  # Typical for heavy trucks on asphalt
+DEFAULT_DRAG_COEFFICIENT = 1.0  # Cd for heavy trucks (0.6-1.0 typical range)
+
 
 def calculate_energy_consumption(
     mass: float,
@@ -17,24 +22,33 @@ def calculate_energy_consumption(
     velocity: float,
     air_density: float = 1.2,
     frontal_area: float = 8.0,
+    drag_coefficient: float = DEFAULT_DRAG_COEFFICIENT,
+    rolling_resistance: float = ROLLING_RESISTANCE_COEFF,
 ) -> float:
     """
     Calculate energy consumption at the wheel using physics-based model.
+
+    This calculation assumes steady-state travel at constant velocity.
+    Energy is computed as force × distance for each resistance component.
 
     Parameters
     ----------
     mass : float
         Vehicle mass in kg
     grade : float
-        Road grade (slope angle in radians)
+        Road grade (slope angle in radians, 0 = flat)
     distance : float
         Distance traveled in meters
     velocity : float
-        Vehicle velocity in m/s
+        Vehicle velocity in m/s (steady-state assumption)
     air_density : float, optional
         Air density in kg/m³ (default: 1.2)
     frontal_area : float, optional
         Vehicle frontal area in m² (default: 8.0)
+    drag_coefficient : float, optional
+        Aerodynamic drag coefficient Cd (default: 1.0 for heavy trucks)
+    rolling_resistance : float, optional
+        Rolling resistance coefficient (default: 0.006 for trucks on asphalt)
 
     Returns
     -------
@@ -44,15 +58,18 @@ def calculate_energy_consumption(
     Examples
     --------
     >>> calculate_energy_consumption(mass=18000, grade=0, distance=100000, velocity=22.2)
+    342511200.0
     """
-    # Gravitational potential energy (climbing)
-    E_gravity = mass * 9.81 * np.sin(grade) * distance
+    # Gravitational potential energy (climbing work against gravity)
+    E_gravity = mass * GRAVITY_ACCELERATION * np.sin(grade) * distance
 
-    # Rolling resistance
-    E_rolling = 0.006 * mass * 9.81 * distance
+    # Rolling resistance energy (friction between tires and road)
+    E_rolling = rolling_resistance * mass * GRAVITY_ACCELERATION * distance
 
-    # Aerodynamic drag
-    E_aero = 0.5 * air_density * frontal_area * (velocity ** 2) * distance
+    # Aerodynamic drag energy (air resistance)
+    # Drag force: F_d = 0.5 * Cd * ρ * A * v²
+    # Energy over distance: E = F_d × distance (assumes constant velocity)
+    E_aero = 0.5 * drag_coefficient * air_density * frontal_area * (velocity ** 2) * distance
 
     # Total energy at wheel
     E_wheel = E_gravity + E_rolling + E_aero

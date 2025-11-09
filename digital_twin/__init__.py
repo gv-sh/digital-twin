@@ -13,6 +13,9 @@ from digital_twin.models import (
     calculate_energy_consumption,
     calculate_battery_degradation,
     calculate_npv,
+    GRAVITY_ACCELERATION,
+    ROLLING_RESISTANCE_COEFF,
+    DEFAULT_DRAG_COEFFICIENT,
 )
 
 from digital_twin.utils import (
@@ -26,4 +29,7 @@ __all__ = [
     "calculate_npv",
     "create_base_technologies",
     "create_base_scenario",
+    "GRAVITY_ACCELERATION",
+    "ROLLING_RESISTANCE_COEFF",
+    "DEFAULT_DRAG_COEFFICIENT",
 ]
