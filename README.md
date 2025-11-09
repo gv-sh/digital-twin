@@ -28,12 +28,51 @@ This research demonstration provides:
 
 ## Project Structure
 
+The project now follows a **layered architecture** with **13 core modules** organized into 5 layers:
+
+```text
+Layer 5 (Interface)   → api/, visualization/
+Layer 4 (Integration) → algorithms/
+Layer 3 (Services)    → infrastructure/, optimization/, simulation/, analysis/
+Layer 2 (Domain)      → data/, physics/, economics/, geospatial/
+Layer 1 (Foundation)  → core/, utils/
+```
+
+### 13 Core Modules
+
+1. **core/** - Foundation types, models, validation, constants
+2. **utils/** - Math utilities, conversions, formatters
+3. **data/** - Data generation, loading, preprocessing
+4. **physics/** - Energy models, emissions, degradation, thermodynamics
+5. **economics/** - ROI, NPV, IRR, cash flow, depreciation
+6. **geospatial/** - Routes, terrain, climate analysis
+7. **infrastructure/** - Charging, hydrogen, grid capacity
+8. **optimization/** - Fleet optimizer, constraints, solvers
+9. **simulation/** - Monte Carlo, scenarios, forecasting
+10. **analysis/** - Performance metrics, comparisons, benchmarking
+11. **algorithms/** - Risk assessment, fleet optimization, prediction
+12. **visualization/** - Charts, dashboards, reports
+13. **api/** - REST endpoints, schemas, middleware
+
+### Directory Structure
+
 ```text
 digital-twin/
 ├── digital_twin/                          # Main Python package
-│   ├── __init__.py                        # Package initialization
-│   ├── models.py                          # Mathematical models (NPV, energy, degradation)
-│   └── utils.py                           # Utility functions and configurations
+│   ├── __init__.py                        # Layered package initialization
+│   ├── core/                              # Types, models, validation, constants
+│   ├── utils/                             # Math, conversions, formatters
+│   ├── data/                              # Data management
+│   ├── physics/                           # Physical models
+│   ├── economics/                         # Financial analysis
+│   ├── geospatial/                        # Geographic analysis
+│   ├── infrastructure/                    # Infrastructure modeling
+│   ├── optimization/                      # Fleet optimization
+│   ├── simulation/                        # Monte Carlo & scenarios
+│   ├── analysis/                          # Performance analysis
+│   ├── algorithms/                        # Core algorithms
+│   ├── visualization/                     # Charts and reports
+│   └── api/                               # REST API
 ├── notebooks/
 │   ├── 01_technology_comparison.ipynb    # Main analysis & visualizations
 │   └── 02_monte_carlo_risk.ipynb         # Risk assessment & portfolio optimization
@@ -284,6 +323,53 @@ results = monte_carlo_simulation(
 )
 
 print(f"Ran {len(results)} simulations")
+```
+
+#### New Module Structure Usage
+
+```python
+# 1. Import core types and create scenarios
+from digital_twin.core import DecarbonizationScenario, VehicleSpecs, TechnologyType
+from digital_twin.data import create_diesel_baseline, create_bev_specs
+
+# 2. Create vehicle specifications
+diesel_specs = create_diesel_baseline()
+bev_specs = create_bev_specs()
+
+# 3. Calculate physics-based energy consumption
+from digital_twin.physics import calculate_wheel_energy, calculate_co2_emissions
+
+energy = calculate_wheel_energy(
+    mass=bev_specs.mass_kg,
+    grade=0.0,
+    distance=100000,
+    velocity=22.2
+)
+
+# 4. Economic analysis with new economics module
+from digital_twin.economics import calculate_npv, calculate_irr
+
+npv = calculate_npv(
+    initial_investment=bev_specs.initial_cost,
+    annual_cashflows=[30000] * 5
+)
+
+# 5. Run Monte Carlo simulation
+from digital_twin.simulation import MonteCarloSimulator
+
+scenario = DecarbonizationScenario(
+    name="BEV Analysis",
+    vehicle_specs=bev_specs
+)
+
+simulator = MonteCarloSimulator(scenario, n_iterations=10000)
+results = simulator.run()
+
+# 6. Generate comprehensive report
+from digital_twin.visualization import generate_full_report
+
+report = generate_full_report(scenario, npv, results)
+report.save('bev_analysis_report.pdf')
 ```
 
 ### Customizing Parameters in Notebooks
