@@ -1,27 +1,21 @@
 """
 Complete mathematical framework for fleet decarbonization analysis.
 
-This module implements the equations defined in Model Equations documentation,
-supporting objectives from Problem and Objective, utilizing parameters from
-Model Attributes, and supporting algorithms from Proposed Algorithms.
-
-The framework addresses: heavy transport operators need mathematical models to
-predict ROI and performance outcomes when transitioning from diesel fleets to
-clean energy alternatives with 2-4x higher upfront costs.
+This module implements high-level fleet analysis equations, building upon
+the physics and economics modules for individual vehicle calculations.
 
 Mathematical Foundation:
 - Extended Emissions Calculation Model (Paper A methodology)
 - Fleet Durability and Performance Model (Paper B corrosion framework)
-- Performance and Energy Consumption Model
-- Economic ROI Model with Risk Assessment
 - Fleet Optimization Model
+- Validation against Queensland trial data
 
-Calibrated against Queensland trial data:
-- 15% battery degradation over 1.5 years
-- 100-200 km operational range per trip
-- 1-3 daily operations typical
-- 2-5 hour charging times
-- ~300 km full charge capacity
+Note: For individual vehicle physics and economics calculations, use:
+- digital_twin.physics.energy for energy consumption models
+- digital_twin.economics.roi for financial analysis
+- digital_twin.physics.degradation for battery performance
+
+This module focuses on fleet-level aggregation and optimization.
 """
 
 import numpy as np
@@ -43,6 +37,14 @@ from digital_twin.core.constants import (
     BEV_BATTERY_TO_WHEEL,
     FCET_H2_TO_WHEEL,
     DIESEL_TANK_TO_WHEEL,
+)
+
+# Import from specialized modules to avoid duplication
+from digital_twin.physics.energy import calculate_wheel_energy
+from digital_twin.physics.degradation import calculate_battery_degradation
+from digital_twin.economics.roi import (
+    calculate_risk_adjusted_npv as _calculate_risk_adjusted_npv,
+    calculate_breakeven_with_degradation as _calculate_breakeven_with_degradation,
 )
 
 
@@ -225,96 +227,21 @@ def calculate_longitudinal_transition_emissions(
 # 2. FLEET DURABILITY AND PERFORMANCE MODEL
 # ==============================================================================
 
+# Battery degradation functions are now imported from physics.degradation module
+# For backward compatibility, we re-export them here
 def calculate_battery_performance_degradation(
     initial_performance: float,
     years: float,
-    charging_cycles: int,
+    charging_cycles: int = 0,
     degradation_rate: float = BATTERY_DEGRADATION_RATE,
-    cycle_degradation_rate: float = 0.0001
 ) -> float:
     """
-    Calculate battery performance with time-based and cycle-based degradation.
+    Calculate battery performance degradation.
 
-    Extending Paper B corrosion methodology to vehicle performance degradation,
-    validated with Queensland trial data.
-
-    P_battery(t) = P_0 · e^(-λt) · ∏_i=1^C (1 - r_cycle,i)
-
-    Parameters
-    ----------
-    initial_performance : float
-        Initial battery performance (e.g., 300 km range from Queensland trials)
-    years : float
-        Time in years
-    charging_cycles : int
-        Total charging cycles completed
-    degradation_rate : float
-        Time-based degradation rate λ
-        Default: 0.106/year (15% over 1.5 years from Queensland trials)
-    cycle_degradation_rate : float
-        Cycle-based degradation per charging cycle
-
-    Returns
-    -------
-    float
-        Degraded battery performance
-
-    Notes
-    -----
-    Calibrated to Queensland trial data:
-    - 15% capacity loss at 1.5 years
-    - Representative utilization patterns
-    - 300 km initial range
-
-    Examples
-    --------
-    >>> # Queensland trial conditions: 1.5 years operation
-    >>> calculate_battery_performance_degradation(300.0, 1.5, 500)
-    255.0  # Approximately 15% degradation
+    Note: This is a wrapper around digital_twin.physics.degradation.calculate_battery_degradation
+    for backward compatibility. New code should import from physics.degradation directly.
     """
-    # Time-based degradation
-    time_factor = np.exp(-degradation_rate * years)
-
-    # Cycle-based degradation
-    cycle_factor = (1 - cycle_degradation_rate) ** charging_cycles
-
-    # Combined degradation
-    degraded_performance = initial_performance * time_factor * cycle_factor
-
-    return degraded_performance
-
-
-def calculate_linear_degradation(
-    initial_capacity: float,
-    cycles: int,
-    degradation_coefficient: float = 0.0001
-) -> float:
-    """
-    Calculate battery degradation using linear model.
-
-    Alternative linear degradation model:
-    C(t) = C_0 (1 - k_deg · cycles)
-
-    Parameters
-    ----------
-    initial_capacity : float
-        Initial battery capacity
-    cycles : int
-        Number of charging cycles
-    degradation_coefficient : float
-        Degradation coefficient k_deg
-
-    Returns
-    -------
-    float
-        Remaining capacity
-
-    Notes
-    -----
-    Calibrated to 15% capacity loss at 1.5 years for representative utilization.
-    """
-    degraded_capacity = initial_capacity * (1 - degradation_coefficient * cycles)
-    return max(0.0, degraded_capacity)
+    return calculate_battery_degradation(initial_performance, years, degradation_rate)
 
 
 def calculate_operational_range(
@@ -374,6 +301,9 @@ def calculate_operational_range(
 # 3. PERFORMANCE AND ENERGY CONSUMPTION MODEL
 # ==============================================================================
 
+# Energy calculation functions are now in digital_twin.physics.energy module
+# Wrapper functions provided here for backward compatibility
+
 def calculate_wheel_energy_per_trip(
     mass: float,
     grade_angle: float,
@@ -388,68 +318,22 @@ def calculate_wheel_energy_per_trip(
     """
     Calculate wheel energy per trip based on physics.
 
+    Note: This is a wrapper for backward compatibility.
+    Use digital_twin.physics.energy.calculate_wheel_energy for new code.
+
     E_wheel = mg·sin(θ)·d + C_rr·mg·d + ½ρ(C_d·A)v²·d + E_aux
-
-    Parameters
-    ----------
-    mass : float
-        Gross vehicle mass (kg), typical: 36,000 kg
-    grade_angle : float
-        Route gradient angle (radians)
-    distance : float
-        Route distance (m), typical: 100-200 km per Queensland trials
-    velocity : float
-        Average speed (m/s), typical: 80 km/h = 22.2 m/s
-    auxiliary_energy : float
-        Auxiliary energy consumption (J) for HVAC, etc.
-    rolling_resistance : float
-        Rolling resistance coefficient (0.006 typical)
-    drag_coefficient : float
-        Aerodynamic drag coefficient Cd (1.0 typical for trucks)
-    frontal_area : float
-        Frontal area A (8.0 m² typical)
-    air_density : float
-        Air density ρ (1.225 kg/m³ at sea level)
-
-    Returns
-    -------
-    float
-        Total wheel energy (Joules)
-
-    Notes
-    -----
-    Assumptions:
-    - Route-average gradient used
-    - Dwell time for charge/refuel added to cycle time separately
-
-    Examples
-    --------
-    >>> # Typical heavy truck: 36,000 kg, 100 km flat route, 80 km/h
-    >>> import numpy as np
-    >>> calculate_wheel_energy_per_trip(
-    ...     mass=36000,
-    ...     grade_angle=0.0,
-    ...     distance=100000,
-    ...     velocity=22.2,
-    ...     auxiliary_energy=0
-    ... )
-    # Returns energy in Joules
     """
-    g = GRAVITY_ACCELERATION
-
-    # Gravitational potential energy (climbing work)
-    E_gravity = mass * g * np.sin(grade_angle) * distance
-
-    # Rolling resistance energy
-    E_rolling = rolling_resistance * mass * g * distance
-
-    # Aerodynamic drag energy
-    E_aero = 0.5 * air_density * drag_coefficient * frontal_area * (velocity ** 2) * distance
-
-    # Total wheel energy
-    E_wheel = E_gravity + E_rolling + E_aero + auxiliary_energy
-
-    return E_wheel
+    wheel_energy = calculate_wheel_energy(
+        mass=mass,
+        grade=grade_angle,
+        distance=distance,
+        velocity=velocity,
+        air_density=air_density,
+        frontal_area=frontal_area,
+        drag_coefficient=drag_coefficient,
+        rolling_resistance=rolling_resistance
+    )
+    return wheel_energy + auxiliary_energy
 
 
 def calculate_battery_electric_energy(
@@ -460,27 +344,10 @@ def calculate_battery_electric_energy(
     """
     Calculate battery energy draw for BEV.
 
+    Note: This is a wrapper for backward compatibility.
+    Use digital_twin.physics.energy.calculate_technology_specific_energy for new code.
+
     E_battery = E_wheel / (η_drivetrain × η_battery)
-
-    Parameters
-    ----------
-    wheel_energy : float
-        Energy at wheel (Joules)
-    drivetrain_efficiency : float
-        Drivetrain efficiency (0.90 typical for BEV)
-    battery_efficiency : float
-        Battery charge-discharge efficiency (0.94 typical)
-
-    Returns
-    -------
-    float
-        Battery energy draw (Joules)
-
-    Examples
-    --------
-    >>> wheel_energy = 1e8  # 100 MJ
-    >>> calculate_battery_electric_energy(wheel_energy, 0.90, 0.94)
-    118343195.266272  # ~118 MJ
     """
     battery_energy = wheel_energy / (drivetrain_efficiency * battery_efficiency)
     return battery_energy
@@ -494,27 +361,10 @@ def calculate_hydrogen_energy(
     """
     Calculate hydrogen energy draw for FCET.
 
+    Note: This is a wrapper for backward compatibility.
+    Use digital_twin.physics.energy.calculate_technology_specific_energy for new code.
+
     H2_draw = E_wheel / (η_drivetrain × η_fuelcell)
-
-    Parameters
-    ----------
-    wheel_energy : float
-        Energy at wheel (Joules)
-    drivetrain_efficiency : float
-        Drivetrain efficiency (0.90 typical)
-    fuelcell_efficiency : float
-        Fuel cell system efficiency (0.50 typical for FCET)
-
-    Returns
-    -------
-    float
-        Hydrogen energy draw (Joules)
-
-    Examples
-    --------
-    >>> wheel_energy = 1e8  # 100 MJ
-    >>> calculate_hydrogen_energy(wheel_energy, 0.90, 0.50)
-    222222222.222222  # ~222 MJ
     """
     h2_energy = wheel_energy / (drivetrain_efficiency * fuelcell_efficiency)
     return h2_energy
@@ -523,6 +373,9 @@ def calculate_hydrogen_energy(
 # ==============================================================================
 # 4. ECONOMIC ROI MODEL WITH RISK ASSESSMENT
 # ==============================================================================
+
+# Economics functions are now in digital_twin.economics.roi module
+# Wrapper functions provided here for backward compatibility
 
 def calculate_risk_adjusted_npv(
     initial_investment: float,
@@ -534,58 +387,18 @@ def calculate_risk_adjusted_npv(
     """
     Calculate risk-adjusted Net Present Value.
 
-    Addresses the challenge that operators face 2-4x higher upfront costs with
-    break-even periods of 4-5 years.
+    Note: This is a wrapper for backward compatibility.
+    Use digital_twin.economics.roi.calculate_risk_adjusted_npv for new code.
 
     NPV_adj = Σ_t (CF_t(1 - σ_t²/2)) / (1 + r + β·σ_t)^t - I_0
-
-    Parameters
-    ----------
-    initial_investment : float
-        Initial investment (2-4x diesel cost typical)
-    annual_cashflows : list of float
-        Expected cash flow at each time period
-    cashflow_variances : list of float
-        Variance in cash flows (performance uncertainty)
-    discount_rate : float
-        Risk-free discount rate (8% default)
-    risk_aversion : float
-        Risk aversion parameter β
-
-    Returns
-    -------
-    float
-        Risk-adjusted NPV
-
-    Notes
-    -----
-    Context from Problem Definition:
-    - Operators face 2-4x higher upfront costs
-    - Break-even periods of 4-5 years
-    - Performance uncertainty due to degradation
-
-    Examples
-    --------
-    >>> initial_inv = 500000  # 2.5x diesel cost
-    >>> cashflows = [100000, 120000, 120000, 130000, 140000]
-    >>> variances = [0.05, 0.04, 0.04, 0.03, 0.03]
-    >>> calculate_risk_adjusted_npv(initial_inv, cashflows, variances, 0.08, 0.5)
-    # Returns risk-adjusted NPV
     """
-    npv_adj = -initial_investment
-
-    for t, (cf, var) in enumerate(zip(annual_cashflows, cashflow_variances), start=1):
-        # Adjust cashflow for variance
-        adjusted_cf = cf * (1 - var**2 / 2)
-
-        # Risk-adjusted discount rate
-        adjusted_discount = discount_rate + risk_aversion * var
-
-        # Present value of adjusted cashflow
-        pv = adjusted_cf / ((1 + adjusted_discount) ** t)
-        npv_adj += pv
-
-    return npv_adj
+    return _calculate_risk_adjusted_npv(
+        initial_investment,
+        annual_cashflows,
+        cashflow_variances,
+        discount_rate,
+        risk_aversion
+    )
 
 
 def calculate_breakeven_with_degradation(
@@ -597,39 +410,17 @@ def calculate_breakeven_with_degradation(
     """
     Calculate break-even time accounting for performance degradation.
 
+    Note: This is a wrapper for backward compatibility.
+    Use digital_twin.economics.roi.calculate_breakeven_with_degradation for new code.
+
     T_breakeven = ln(1 + I_0/CF_annual) / ln(1 + r) + ΔT_degradation
-
-    Parameters
-    ----------
-    initial_investment : float
-        Initial investment
-    annual_cashflow : float
-        Annual cash flow
-    discount_rate : float
-        Discount rate
-    degradation_years : float
-        Additional time due to degradation effects (ΔT_degradation)
-
-    Returns
-    -------
-    float
-        Break-even period (years)
-
-    Examples
-    --------
-    >>> calculate_breakeven_with_degradation(500000, 120000, 0.08, 0.5)
-    # Returns break-even period accounting for degradation
     """
-    if annual_cashflow <= 0:
-        return float('inf')
-
-    # Standard break-even calculation
-    base_breakeven = np.log(1 + initial_investment / annual_cashflow) / np.log(1 + discount_rate)
-
-    # Add degradation impact
-    breakeven = base_breakeven + degradation_years
-
-    return breakeven
+    return _calculate_breakeven_with_degradation(
+        initial_investment,
+        annual_cashflow,
+        discount_rate,
+        degradation_years
+    )
 
 
 # ==============================================================================
@@ -785,10 +576,7 @@ def validate_queensland_trials() -> Dict[str, bool]:
     # Test 1: Battery degradation matches Queensland trials
     initial_range = 300.0  # km
     years = 1.5
-    cycles = 500  # Approximate for 1.5 years with 1-3 daily operations
-    degraded_range = calculate_battery_performance_degradation(
-        initial_range, years, cycles
-    )
+    degraded_range = calculate_battery_degradation(initial_range, years)
     degradation_percent = (initial_range - degraded_range) / initial_range
     results['degradation_15_percent'] = 0.13 <= degradation_percent <= 0.17
 
@@ -803,12 +591,11 @@ def validate_queensland_trials() -> Dict[str, bool]:
     results['range_100_200_km'] = 100 <= effective_range <= 300
 
     # Test 3: Energy calculations for typical trip
-    wheel_energy = calculate_wheel_energy_per_trip(
+    wheel_energy = calculate_wheel_energy(
         mass=36000,  # kg
-        grade_angle=0.0,  # flat
+        grade=0.0,  # flat
         distance=120000,  # 120 km in meters
         velocity=22.2,  # 80 km/h in m/s
-        auxiliary_energy=0
     )
     battery_energy_kwh = calculate_battery_electric_energy(wheel_energy) / 3_600_000
     results['energy_reasonable'] = 50 <= battery_energy_kwh <= 300

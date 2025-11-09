@@ -55,6 +55,11 @@ from digital_twin.data import (
     generate_fleet_data,
     create_diesel_baseline,
     create_bev_specs,
+    create_fcet_specs,
+    create_hybrid_specs,
+    create_base_technologies,
+    create_base_operational_profile,
+    create_base_financial_params,
 )
 
 # Layer 3: Services - Infrastructure, Optimization, Simulation, Analysis
@@ -115,6 +120,11 @@ __all__ = [
     "generate_fleet_data",
     "create_diesel_baseline",
     "create_bev_specs",
+    "create_fcet_specs",
+    "create_hybrid_specs",
+    "create_base_technologies",
+    "create_base_operational_profile",
+    "create_base_financial_params",
     # Simulation
     "MonteCarloSimulator",
     "create_scenario",

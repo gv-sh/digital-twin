@@ -20,7 +20,6 @@ from digital_twin.models.equations import (
 
     # Degradation Models
     calculate_battery_performance_degradation,
-    calculate_linear_degradation,
     calculate_operational_range,
 
     # Energy Models
@@ -34,6 +33,9 @@ from digital_twin.models.equations import (
 
     # Fleet Optimization
     optimize_technology_mix,
+
+    # Validation
+    validate_queensland_trials,
 )
 
 __all__ = [
@@ -44,7 +46,6 @@ __all__ = [
 
     # Degradation Models
     "calculate_battery_performance_degradation",
-    "calculate_linear_degradation",
     "calculate_operational_range",
 
     # Energy Models
@@ -58,4 +59,7 @@ __all__ = [
 
     # Fleet Optimization
     "optimize_technology_mix",
+
+    # Validation
+    "validate_queensland_trials",
 ]
