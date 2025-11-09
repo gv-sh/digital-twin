@@ -72,7 +72,7 @@ def calculate_energy_consumption(
     # Drag force: F_d = 0.5 * Cd * ρ * A * v²
     # Energy over distance: E = F_d × distance (assumes constant velocity)
     E_aero = (
-        0.5 * drag_coefficient * air_density * frontal_area * 
+        0.5 * drag_coefficient * air_density * frontal_area *
         (velocity ** 2) * distance
     )
 
