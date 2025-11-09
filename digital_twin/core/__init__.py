@@ -49,6 +49,20 @@ from digital_twin.core.validation import (
     check_range_feasibility,
 )
 
+from digital_twin.core.attributes import (
+    VehiclePerformanceParameters,
+    OperationalContextParameters,
+    EconomicEnvironmentalParameters,
+    DegradationDurabilityParameters,
+    TechnologyEfficiencyParameters,
+    PerformanceMetrics,
+    EconomicReturns,
+    EnvironmentalImpact,
+    ModelInputAttributes,
+    ModelOutputAttributes,
+    DataIntegrationMetadata,
+)
+
 __all__ = [
     # Types
     "VehicleType",
@@ -86,4 +100,18 @@ __all__ = [
     "validate_financial_params",
     "validate_scenario",
     "check_range_feasibility",
+    # Model Attributes - Input
+    "VehiclePerformanceParameters",
+    "OperationalContextParameters",
+    "EconomicEnvironmentalParameters",
+    "DegradationDurabilityParameters",
+    "TechnologyEfficiencyParameters",
+    # Model Attributes - Output
+    "PerformanceMetrics",
+    "EconomicReturns",
+    "EnvironmentalImpact",
+    # Model Attributes - Composite
+    "ModelInputAttributes",
+    "ModelOutputAttributes",
+    "DataIntegrationMetadata",
 ]
